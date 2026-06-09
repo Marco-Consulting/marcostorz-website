@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website-Audit v2 · Marco Storz Coaching + Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy:#1E3140; --navy-2:#2A4357; --steel:#4A7A95; --steel-light:#6E94A8;
+    --warm:#8E9B9C; --white:#fff; --off:#F6F6F4; --g100:#EFEEEB; --g200:#E2E1DD;
+    --g300:#C5C4C0; --g400:#8E9B9C; --g500:#6B7378; --g600:#4A5258; --g700:#2D3338; --ink:#1F2024;
+    --line:rgba(30,49,64,.10);
+    --sans:'Jost','Helvetica Neue',Arial,sans-serif;
+    --ok:#1F8A5B; --warn:#B8862F; --crit:#B4503C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:var(--sans); color:var(--g700); background:var(--g100); line-height:1.6; -webkit-font-smoothing:antialiased;}
+  .doc{max-width:1000px; margin:0 auto; background:var(--white);}
+  a{color:var(--steel); text-decoration:none;}
+  .hero{background:var(--navy); color:#fff; padding:4.5rem 4rem 3.5rem; position:relative; overflow:hidden;}
+  .hero::after{content:''; position:absolute; right:-8%; top:-40%; width:480px; height:480px; border-radius:50%;
+    background:radial-gradient(circle, rgba(110,148,168,.20), transparent 70%);}
+  .hero .kicker{font-size:.72rem; letter-spacing:.28em; text-transform:uppercase; color:var(--steel-light); font-weight:500; margin-bottom:1.4rem; display:flex; align-items:center; gap:.8rem;}
+  .hero .kicker::before{content:''; width:30px; height:1px; background:var(--steel-light);}
+  .hero h1{font-size:clamp(2rem,4.2vw,3.1rem); font-weight:300; line-height:1.1; letter-spacing:-.01em; margin-bottom:1.2rem; max-width:22ch;}
+  .hero h1 em{font-style:normal; color:var(--steel-light);}
+  .hero p{font-size:1.02rem; font-weight:300; color:rgba(255,255,255,.8); max-width:64ch;}
+  .hero .meta{margin-top:2rem; display:flex; gap:2.4rem; flex-wrap:wrap; font-size:.8rem; color:rgba(255,255,255,.6); font-weight:300;}
+  .hero .meta b{display:block; color:#fff; font-weight:500; font-size:.95rem; letter-spacing:.02em;}
+  section{padding:3.4rem 4rem; border-bottom:1px solid var(--line);}
+  .eyebrow{font-size:.7rem; letter-spacing:.22em; text-transform:uppercase; color:var(--steel); font-weight:600; margin-bottom:.9rem; display:flex; align-items:center; gap:.7rem;}
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--steel);}
+  h2{font-size:1.7rem; font-weight:300; color:var(--navy); letter-spacing:-.01em; line-height:1.15; margin-bottom:1.3rem;}
+  h3{font-size:1.12rem; font-weight:500; color:var(--navy); margin:1.6rem 0 .6rem;}
+  h4{font-size:.95rem; font-weight:600; color:var(--navy); margin:.2rem 0 .4rem;}
+  p{margin-bottom:.85rem;}
+  .lead{font-size:1.05rem; font-weight:300; color:var(--g600);}
+  strong{font-weight:600; color:var(--ink);}
+  ul{margin:.4rem 0 1rem 1.1rem;} li{margin-bottom:.4rem;}
+  .scorecard{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--g200); border:1px solid var(--g200); margin-top:1.6rem;}
+  .score{background:#fff; padding:1.3rem 1.2rem;}
+  .score .cat{font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; color:var(--g500); font-weight:500;}
+  .score .val{font-size:2rem; font-weight:300; color:var(--navy); line-height:1; margin:.5rem 0 .1rem;}
+  .score .val span{font-size:.9rem; color:var(--g400);}
+  .bar{height:3px; background:var(--g200); border-radius:2px; overflow:hidden; margin-top:.5rem;}
+  .bar i{display:block; height:100%; background:var(--steel);}
+  .tag{display:inline-block; font-size:.66rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:.2rem .55rem; border-radius:3px; vertical-align:middle;}
+  .t-quick{background:#E6F1EC; color:var(--ok);}
+  .t-high{background:#F6E9E5; color:var(--crit);}
+  .t-mid{background:#F6EFDD; color:var(--warn);}
+  .t-strat{background:#E7EDF1; color:var(--steel);}
+  .t-done{background:#E6F1EC; color:var(--ok);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem;}
+  .card{background:var(--off); border:1px solid var(--line); border-radius:4px; padding:1.4rem 1.5rem;}
+  .card.good{border-left:3px solid var(--ok);}
+  .card.page{border-left:3px solid var(--steel);}
+  .finding{margin:1rem 0;}
+  .finding .lab{font-size:.7rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--crit); margin-bottom:.15rem;}
+  .finding.ok .lab{color:var(--ok);}
+  .finding .fix{font-size:.92rem; color:var(--g600);}
+  .finding .fix b{color:var(--navy);}
+  table{width:100%; border-collapse:collapse; margin:1.2rem 0; font-size:.88rem;}
+  th,td{text-align:left; padding:.7rem .8rem; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--g500); font-weight:600;}
+  td b{color:var(--navy); font-weight:500;}
+  tr:last-child td{border-bottom:none;}
+  .num{white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .ba{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:.6rem 0 1.2rem;}
+  .ba > div{border:1px solid var(--line); border-radius:4px; padding:.9rem 1rem; font-size:.9rem;}
+  .ba .before{background:#FBF4F2;} .ba .after{background:#F0F6F2;}
+  .ba .h{font-size:.66rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; margin-bottom:.4rem;}
+  .ba .before .h{color:var(--crit);} .ba .after .h{color:var(--ok);}
+  .pill-row{display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0 1rem;}
+  .pill{font-size:.78rem; background:var(--g100); border:1px solid var(--g200); color:var(--g600); padding:.35rem .7rem; border-radius:999px;}
+  .foot{padding:2.6rem 4rem; background:var(--navy); color:rgba(255,255,255,.66); font-size:.82rem; font-weight:300;}
+  .foot b{color:#fff; font-weight:500;}
+  .big-rating{display:flex; align-items:baseline; gap:1rem; margin:.4rem 0 1rem;}
+  .big-rating .n{font-size:3.4rem; font-weight:200; color:var(--steel); line-height:1;}
+  .big-rating .of{font-size:1.1rem; color:var(--g400);}
+  @media(max-width:780px){
+    .hero,section{padding:2.4rem 1.4rem;} .foot{padding:2rem 1.4rem;}
+    .scorecard{grid-template-columns:repeat(2,1fr);}
+    .grid2,.ba{grid-template-columns:1fr;}
+    table{font-size:.82rem;} th,td{padding:.55rem .5rem;}
+  }
+  @media print{ body{background:#fff;} .doc{max-width:none;} section{break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <header class="hero">
+    <div class="kicker">Vollständiges Website-Audit · v2 · aktueller Stand</div>
+    <h1>Eine starke Website – jetzt mit <em>messbarer</em> Wirkung.</h1>
+    <p>Seit dem ersten Audit wurden die wichtigsten Hebel umgesetzt: echte Kundenlogos &amp; Referenzen, strukturierte Daten, FAQ, mobiler Sticky-CTA, neu geschärfte Texte und eine logischere Seitenführung. Dieser Bericht bewertet den <strong>aktuellen Zustand</strong>, analysiert jede Seite kritisch aus Sicht eines Schweizer KMU-Geschäftsführers und zeigt, was noch zwischen „sehr gut" und „herausragend" steht.</p>
+    <div class="meta">
+      <span><b>marcostorz.expert</b>Coaching + Consulting</span>
+      <span><b>8 Seiten</b>Home · Leistungen · Fachbereiche · Portrait · Referenzen · Kontakt · Impressum · Datenschutz</span>
+      <span><b>Zielgruppe</b>GF · Logistik- · SCM- · Zoll-Verantwortliche · Unternehmer</span>
+    </div>
+  </header>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <section>
+    <div class="eyebrow">Executive Summary</div>
+    <h2>30-Sekunden-Urteil: schafft die Seite Vertrauen?</h2>
+    <p class="lead">Ja. Ein GF erkennt in Sekunden: spezialisierter Logistik-/Zoll-Berater, Schweizer KMU-Fokus, über 20 Jahre operative Praxis, echte Referenzen mit Namen und Foto. Die Seite wirkt ruhig, seriös, teuer – nicht wie eine Agentur, sondern wie ein erfahrener Sparringspartner. Das ist genau die Zielwirkung.</p>
+    <p>Die verbleibenden Hebel sind <strong>nicht mehr gestalterisch</strong>, sondern liegen in drei Bereichen: (1) <strong>echte Funktion in WIX</strong> – Formular &amp; Buchung live an HubSpot/Outlook anbinden, (2) <strong>lokale Sichtbarkeit &amp; Content</strong> – Google-Unternehmensprofil, Fachbereich-Unterseiten, Ratgeber, (3) <strong>Vertrauens-Feinschliff</strong> – Zertifikate/Mitgliedschaften, mehr belegte Zahlen.</p>
+    <div class="scorecard">
+      <div class="score"><div class="cat">Design</div><div class="val">9<span>/10</span></div><div class="bar"><i style="width:90%"></i></div></div>
+      <div class="score"><div class="cat">Vertrauen</div><div class="val">8<span>/10</span></div><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="score"><div class="cat">Verständlichkeit</div><div class="val">8<span>/10</span></div><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="score"><div class="cat">Positionierung</div><div class="val">8<span>/10</span></div><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="score"><div class="cat">SEO</div><div class="val">7<span>/10</span></div><div class="bar"><i style="width:70%"></i></div></div>
+      <div class="score"><div class="cat">Conversion</div><div class="val">7<span>/10</span></div><div class="bar"><i style="width:70%"></i></div></div>
+      <div class="score"><div class="cat">Mobile UX</div><div class="val">8<span>/10</span></div><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="score"><div class="cat">Gesamtwirkung</div><div class="val">8<span>/10</span></div><div class="bar"><i style="width:80%"></i></div></div>
+    </div>
+    <h3>Die drei grössten verbleibenden Hebel</h3>
+    <ul>
+      <li><strong>Funktion scharf schalten (WIX):</strong> Kontaktformular → HubSpot-CRM, Terminbuchung → HubSpot Meetings mit Outlook-Sync. Ohne dies versickern Anfragen. <span class="tag t-high">Sofort</span></li>
+      <li><strong>Lokale SEO &amp; Themenautorität:</strong> Google-Unternehmensprofil Rorschach, je Fachbereich eine eigene Unterseite, 4–6 Ratgeber-/FAQ-Artikel für „Frachtkosten senken", „Zollstruktur KMU" etc. <span class="tag t-high">Sofort</span></li>
+      <li><strong>Belege statt Behauptungen:</strong> Zertifikate/Mitgliedschaften, freigegebene Projektzahlen, Foto bei Tanja Kahre ersetzen. <span class="tag t-mid">Wichtig</span></li>
+    </ul>
+  </section>
+
+  <!-- BEREITS UMGESETZT -->
+  <section>
+    <div class="eyebrow">Seit dem letzten Audit erledigt</div>
+    <h2>Was bereits sitzt.</h2>
+    <div class="grid2">
+      <div class="card good"><h4>Marke &amp; Logo</h4>Offizielles Logo (farbig in heller Nav, weiss im dunklen Footer), Jost-Schrift, Farbwelt exakt aus dem Logo abgeleitet – seitenübergreifend konsistent.</div>
+      <div class="card good"><h4>Echte Referenzen &amp; Logos</h4>Namentliche Kundenstimmen mit Foto (Lista, Galifa, Lantal, Foppa) und ein Logo-Wall mit 8 echten Kundenlogos auf Home &amp; Referenzen.</div>
+      <div class="card good"><h4>Technische &amp; AI-SEO</h4>Eigene Titles/Meta je Seite, Canonical, Open-Graph, JSON-LD (ProfessionalService, Person, Breadcrumb, FAQPage).</div>
+      <div class="card good"><h4>Conversion-Basis</h4>Mobiler Sticky-CTA, FAQ-Block, geschärfte CTA-Microcopy, Mikro-CTAs je Leistung, Inline-Formularbestätigung.</div>
+      <div class="card good"><h4>Seitenlogik Home</h4>Neu geordnet nach Besucherreise: Problem → Erstcheck → Prozess → CTA → Über mich → Leistungen → CTA → Fachbereiche → Stimmen → Logos.</div>
+      <div class="card good"><h4>Bilder &amp; Portrait</h4>Echte Marco-Fotos im Hero (deckungsgleich), Themenbilder je Fachbereich, neu getextete Portrait-Seite mit Projekterfolgen.</div>
+    </div>
+  </section>
+
+  <!-- SEITENANALYSE -->
+  <section>
+    <div class="eyebrow">Seitenanalyse</div>
+    <h2>Jede Seite einzeln – gut / schwach / ändern.</h2>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">1 · Startseite</h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Klare Heldenbotschaft, Kennzahlen-Band, logische Reihenfolge, zwei CTAs, Social Proof am Ende. Positionierung in &lt;5 s erfassbar.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Hero-H1 „Klarheit. Struktur. Verantwortung." ist markenstark, aber abstrakt – die keyword-/nutzentragende Zeile darunter trägt die Aussage. Fachbereiche-Teaser &amp; Portrait-Vorschau konkurrieren leicht um Aufmerksamkeit.</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix"><b>Vertrauenszeile höher ziehen</b> (Logos/„20+ Jahre · CH/DE/EU" direkt unter dem Hero), <b>ein einziger primärer CTA-Pfad</b> pro Bildschirm. Erstcheck durchgängig als „kostenlos &amp; unverbindlich" auszeichnen.</div></div>
+    </div>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">2 · Leistungen</h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Vier klar getrennte Leistungen mit Outcome-Logik, Mikro-CTAs, alternierende full-bleed Bänder, FAQ mit Schema. Übersichts-Grid (Doppelung zur Home) entfernt.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Noch kein sichtbarer <b>Ablauf/Preisrahmen</b>. KMU-GF wollen vor der Anfrage grob wissen: Wie läuft es, was kostet es ungefähr?</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix"><b>„So läuft die Zusammenarbeit"</b> (Erstgespräch → Analyse → Umsetzung) und je Leistung ein <b>konkreter Ergebnis-Wert</b> („typisch −10 bis −20 % Frachtkosten").</div></div>
+    </div>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">3 · Fachbereiche</h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Fünf Themencluster, alternierende Bänder, echte Themenbilder. Starke Grundlage für SEO.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Alles auf <b>einer</b> URL – das grösste ungenutzte SEO-Potenzial. „Zollberatung Schweiz" rankt nicht über einen Abschnitt, sondern über eine eigene Seite.</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix">Mittelfristig <b>je Fachbereich eine eigene Unterseite</b> (eigene URL, Title, FAQ, interne Links). Themenbilder als echte <code>&lt;img&gt;</code> mit Alt-Text, lokal in WIX gehostet statt Unsplash-Hotlink.</div></div>
+    </div>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">4 · Portrait <span class="tag t-done">neu getextet</span></h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Neu nach „Problem → Glaubwürdigkeit → Vertrauen → Kontakt": Nutzenfokus statt CV, „Warum mit mir arbeiten", „Typische Herausforderungen", Projekterfolge, Kundenstimmen-Teaser, stärkere CTA.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Projekterfolge sind aktuell <b>Platzhalter</b> – wirken nur, wenn sie durch echte (freigegebene) Zahlen ersetzt werden. Zertifikate/Mitgliedschaften fehlen noch.</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix">Echte Projektzahlen einsetzen, 1–2 Zertifikate/Verbände ergänzen (E-E-A-T), optional kurzes Vorstellungs-Video.</div></div>
+    </div>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">5 · Referenzen</h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Vier namentliche Stimmen mit Foto, ausführliche Cases, Logo-Wall, Kennzahlen-Band. Glaubwürdig.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Bei Tanja Kahre (Lista) Platzhalter-Silhouette; ein Case nutzt fremdes Foto als Avatar. Keine verlinkte Tiefe zu den Fachbereichen.</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix">Echtes Foto/Logo-Freigabe einholen, je Case <b>einen Ergebniswert gross</b> hervorheben und auf den passenden Fachbereich verlinken.</div></div>
+    </div>
+
+    <div class="card page" style="margin-bottom:1.3rem;">
+      <h3 style="margin-top:0;">6 · Kontakt <span class="tag t-high">Funktion in WIX nötig</span></h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Klare Struktur, echte Karte (Google Maps) mit „Route planen", Embed-Platzhalter für HubSpot-Buchung, saubere Formular-Labels, Inline-Bestätigung.</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Formular &amp; Buchung sind im Prototyp <b>Demo</b>. Live müssen sie an HubSpot/Outlook gebunden werden, sonst kommt keine Anfrage an.</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix">WIX-Formular → HubSpot-Automation (Kontakt + Auto-Antwort), HubSpot-Meetings-Embed mit Outlook-Sync, DSG/DSGVO-Consent-Checkbox.</div></div>
+    </div>
+
+    <div class="card page">
+      <h3 style="margin-top:0;">7 · Impressum / Datenschutz / Footer / Nav</h3>
+      <div class="finding ok"><div class="lab">Gut</div><div class="fix">Rechtsseiten vorhanden &amp; auf <code>noindex</code>, Footer mit Kontakt/NAP &amp; Sitemap-Links, Nav schlank mit abgesetztem „Termin buchen".</div></div>
+      <div class="finding"><div class="lab">Schwach</div><div class="fix">Datenschutz muss bei Live-Formular/Buchung HubSpot &amp; Outlook als Auftragsverarbeiter nennen; Cookie-Consent fehlt noch (sobald Analytics/HubSpot laden).</div></div>
+      <div class="finding"><div class="lab">Ändern</div><div class="fix">Datenschutz um Drittdienste ergänzen, <b>Cookie-Consent-Banner</b> (WIX nativ), aktiven Menüpunkt markieren, Telefonnummer im Header als Klick-to-Call auf Mobile.</div></div>
+    </div>
+  </section>
+
+  <!-- NUTZERREISE -->
+  <section>
+    <div class="eyebrow">Nutzerreise nach Besuchergruppe</div>
+    <h2>Wer kommt – und was braucht er zuerst?</h2>
+    <table>
+      <tr><th>Besucher</th><th>Erste Frage</th><th>Empfohlener Pfad / Hebel</th></tr>
+      <tr><td><b>Geschäftsführer</b></td><td>Lohnt sich das? Ist das seriös?</td><td>Hero → Referenzen/Logos → Erstcheck (risikolos). Vertrauenssignale hoch halten.</td></tr>
+      <tr><td><b>Logistikleiter</b></td><td>Versteht der mein Tagesgeschäft?</td><td>Fachbereich Transport → Projekterfolge → Erstcheck. Operative Sprache.</td></tr>
+      <tr><td><b>SCM-Verantwortliche</b></td><td>Denkt der das System ganzheitlich?</td><td>Fachbereiche Strategie/IT → Ansatz „systemischer Blick".</td></tr>
+      <tr><td><b>Zollverantwortliche</b></td><td>Hat er echte Zoll-Tiefe?</td><td>Fachbereich Zoll (eigene Seite!) → FAQ → Kontakt.</td></tr>
+      <tr><td><b>Unternehmer / KMU</b></td><td>Bekomme ich einen Partner, keinen Folien-Berater?</td><td>Portrait „Warum mit mir" → Erstcheck.</td></tr>
+    </table>
+  </section>
+
+  <!-- PRIORISIERTE MASSNAHMEN -->
+  <section>
+    <div class="eyebrow">Priorisierte Massnahmen</div>
+    <h2>Was wann – nach Wirkung.</h2>
+    <table>
+      <tr><th>Massnahme</th><th>Bereich</th><th>Priorität</th></tr>
+      <tr><td><b>WIX-Formular → HubSpot-CRM + Auto-Antwort</b></td><td>Conversion</td><td><span class="tag t-high">Sofort</span></td></tr>
+      <tr><td><b>HubSpot Meetings ↔ Outlook als Buchungs-Embed</b></td><td>Conversion</td><td><span class="tag t-high">Sofort</span></td></tr>
+      <tr><td><b>Google-Unternehmensprofil Rorschach (NAP, Kategorien, Fotos)</b></td><td>Lokale SEO</td><td><span class="tag t-high">Sofort</span></td></tr>
+      <tr><td><b>Cookie-Consent + Datenschutz um Drittdienste ergänzen</b></td><td>Recht</td><td><span class="tag t-high">Sofort</span></td></tr>
+      <tr><td><b>Bilder als echte <code>&lt;img&gt;</code> + Alt-Texte, lokal gehostet</b></td><td>Bild-SEO/Speed</td><td><span class="tag t-mid">Wichtig</span></td></tr>
+      <tr><td><b>Echte Projektzahlen statt Platzhalter; Zertifikate/Verbände</b></td><td>Vertrauen</td><td><span class="tag t-mid">Wichtig</span></td></tr>
+      <tr><td><b>„So läuft die Zusammenarbeit" + Ergebnis-Werte je Leistung</b></td><td>Conversion</td><td><span class="tag t-mid">Wichtig</span></td></tr>
+      <tr><td><b>Tanja-Kahre-Foto/Freigabe; Cases → Fachbereich verlinken</b></td><td>Vertrauen/SEO</td><td><span class="tag t-strat">Optional</span></td></tr>
+      <tr><td><b>Fachbereiche als eigene Unterseiten (WIX CMS)</b></td><td>SEO</td><td><span class="tag t-strat">Später</span></td></tr>
+      <tr><td><b>Ratgeber-/FAQ-Artikel (4–6) für Long-Tail &amp; AI</b></td><td>SEO/AI</td><td><span class="tag t-strat">Später</span></td></tr>
+      <tr><td><b>Analytics + Conversion-Tracking (GA4/HubSpot, Events auf CTA)</b></td><td>Messung</td><td><span class="tag t-mid">Wichtig</span></td></tr>
+    </table>
+  </section>
+
+  <!-- NEUE STRUKTUR -->
+  <section>
+    <div class="eyebrow">Optimierte Seiten- &amp; Navigationsstruktur</div>
+    <h2>Schlank, mit Raum zum Wachsen.</h2>
+    <div class="grid2">
+      <div>
+        <h4>Navigation (heute, gut)</h4>
+        <ul>
+          <li>Leistungen · Fachbereiche · Portrait · Referenzen · Kontakt · <em>Termin buchen</em></li>
+          <li>Empfehlung: aktiven Punkt markieren, auf Mobile Telefonnummer als Sticky.</li>
+        </ul>
+        <h4>Ausbaustufe (mit CMS)</h4>
+        <ul>
+          <li>Fachbereiche als Dropdown → 5 Unterseiten</li>
+          <li>Neuer Menüpunkt „Ratgeber" (Blog/FAQ-Hub)</li>
+        </ul>
+      </div>
+      <div>
+        <h4>URL-Struktur (sprechend, flach)</h4>
+        <ul>
+          <li><code>/leistungen</code>, <code>/fachbereiche/zoll-aussenhandel</code></li>
+          <li><code>/referenzen</code>, <code>/portrait</code>, <code>/kontakt</code></li>
+          <li><code>/ratgeber/frachtkosten-senken</code></li>
+        </ul>
+        <h4>Duplicate Content / Kannibalisierung</h4>
+        <ul>
+          <li>Home-Leistungsteaser ↔ Leistungsseite sauber getrennt (Teaser kurz, Detail tief). ✔</li>
+          <li>Bei Fachbereich-Unterseiten je <b>ein</b> Fokus-Keyword pro URL.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEUE TEXTE -->
+  <section>
+    <div class="eyebrow">Neue Text- &amp; Meta-Vorschläge</div>
+    <h2>Konkrete Formulierungen.</h2>
+    <h4>Meta-Titles &amp; -Descriptions (Auswahl)</h4>
+    <table>
+      <tr><th>Seite</th><th>Title (≤ 60 Z.) / Description (≤ 155 Z.)</th></tr>
+      <tr><td><b>Home</b></td><td>Logistik- &amp; Zollberatung für KMU | Marco Storz, Rorschach<br /><span style="color:var(--g500)">Strategischer Sparringspartner für Schweizer KMU in Logistik, Zoll &amp; Supply Chain. 20+ Jahre operative Praxis. Kostenloser Erstcheck.</span></td></tr>
+      <tr><td><b>Fachbereich Zoll</b></td><td>Zollberatung Schweiz für KMU – Aussenhandel | Marco Storz<br /><span style="color:var(--g500)">Zollabwicklung, Ursprung, Präferenzen &amp; Exportkontrolle – praxisnah für Schweizer Industrie- und Handelsunternehmen.</span></td></tr>
+      <tr><td><b>Portrait</b></td><td>Marco Storz – Logistik- &amp; Zollberater mit Praxis | Über mich<br /><span style="color:var(--g500)">Kein Berater von aussen, ein Partner aus der Praxis: 20+ Jahre in Spedition, Industrie &amp; Supply-Chain-Leitung.</span></td></tr>
+    </table>
+    <h4>FAQ-Bausteine (für SEO &amp; AI – zitierfähig)</h4>
+    <div class="ba" style="grid-template-columns:1fr;">
+      <div class="after"><div class="h">Frage → Antwort</div><b>Was kostet eine Logistikberatung bei Marco Storz?</b> Der strategische Erstcheck ist kostenlos und unverbindlich. Projekte werden individuell nach Aufwand oder als monatliche Begleitung vereinbart – transparent vor Beginn.</div>
+    </div>
+    <div class="ba" style="grid-template-columns:1fr;">
+      <div class="after"><div class="h">Frage → Antwort</div><b>Für wen eignet sich die Beratung?</b> Für Schweizer KMU aus Industrie, Handel und Logistik – Geschäftsführung, Einkauf, Betriebs-, Supply-Chain- und Zollverantwortliche.</div>
+    </div>
+    <div class="pill-row">
+      <span class="pill">Logistikberatung Schweiz</span><span class="pill">Zollberatung KMU</span><span class="pill">Transportkosten senken</span><span class="pill">Supply Chain Beratung Ostschweiz</span><span class="pill">Frachtenausschreibung</span><span class="pill">Aussenhandel Schweiz</span><span class="pill">Incoterms Schulung</span>
+    </div>
+  </section>
+
+  <!-- SEO / AI CONTENT PLAN -->
+  <section>
+    <div class="eyebrow">SEO- &amp; KI-Content-Plan</div>
+    <h2>Sichtbar werden, wo entschieden wird.</h2>
+    <p>Google und Antwortmaschinen (ChatGPT, Perplexity, Gemini) bevorzugen Seiten mit klarer Entität, strukturierten Daten und zitierfähigen Antworten. Fundament (JSON-LD, FAQ) liegt – jetzt zählt <strong>Themenautorität durch Inhalte</strong>.</p>
+    <h4>Empfohlene Ratgeber-/FAQ-Seiten</h4>
+    <ul>
+      <li><strong>„Transportkosten senken: 7 Hebel für Schweizer KMU"</strong> – Long-Tail + Erstcheck-CTA</li>
+      <li><strong>„Zollstruktur im KMU richtig aufsetzen"</strong> – Definitionen (Ursprung, Präferenz, Incoterms)</li>
+      <li><strong>„Frachtenausschreibung: Ablauf &amp; Stolperfallen"</strong> – Prozess-Guide</li>
+      <li><strong>„Wann lohnt sich ein externes Logistikbüro?"</strong> – Entscheidungshilfe</li>
+      <li><strong>Glossar Logistik &amp; Zoll</strong> – je Begriff eine klare, zitierfähige Definition</li>
+    </ul>
+    <h4>AEO/GEO-Prinzipien</h4>
+    <ul>
+      <li>Jede Seite beantwortet <b>eine klare Frage</b> in den ersten zwei Sätzen.</li>
+      <li><b>Definitionen &amp; Fachbegriffe</b> präzise erklären – das macht Inhalte zitierfähig.</li>
+      <li><b>E-E-A-T sichtbar:</b> Erfahrung (20+ Jahre, Stationen), Autorität (Referenzen, Zahlen), Vertrauen (Impressum, echte Kontaktwege).</li>
+    </ul>
+  </section>
+
+  <!-- TECHNIK / A11Y / MOBILE -->
+  <section>
+    <div class="eyebrow">Technik · Barrierefreiheit · Mobile</div>
+    <h2>Sauber gebaut – Feinschliff in WIX.</h2>
+    <div class="grid2">
+      <div>
+        <h4>Technik / Performance</h4>
+        <ul>
+          <li>Themenbilder lokal in WIX (WebP, Lazy-Load) statt Unsplash-Hotlink → schnellere LCP.</li>
+          <li><code>sitemap.xml</code> &amp; <code>robots.txt</code> (WIX nativ) in der Search Console einreichen.</li>
+          <li>GA4 + HubSpot-Tracking, Events auf „Termin buchen" / „Erstcheck".</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Barrierefreiheit (WCAG)</h4>
+        <ul>
+          <li>Alt-Texte für alle Inhaltsbilder (bei echten <code>&lt;img&gt;</code>).</li>
+          <li>Kontraste &amp; Schriftgrössen ≥ 16 px – aktuell erfüllt.</li>
+          <li>Tastatur-Fokus &amp; Labels (Formular hat verknüpfte Labels ✔).</li>
+        </ul>
+        <h4>Mobile</h4>
+        <ul>
+          <li>Sticky-CTA aktiv ✔, Tap-Targets ≥ 44 px, einspaltige Formulare.</li>
+          <li>Hero-Bildausschnitt je Breakpoint prüfen (Kopf frei).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABSCHLUSSBEWERTUNG -->
+  <section>
+    <div class="eyebrow">Abschlussbewertung</div>
+    <h2>Gesamtwirkung.</h2>
+    <div class="big-rating"><span class="n">8.0</span><span class="of">/ 10 – Gesamtwirkung</span></div>
+    <p class="lead">Die Website schafft heute in unter 30 Sekunden Vertrauen und rechtfertigt eine Kontaktaufnahme. Sie wirkt spezialisiert, ruhig und hochwertig – im richtigen Schweizer B2B-Ton. Der Sprung auf 9+ kommt nicht über mehr Design, sondern über <strong>echte Funktion (HubSpot/Outlook), lokale Sichtbarkeit und belegte Zahlen</strong>.</p>
+    <table>
+      <tr><th>Kriterium</th><th>Heute</th><th>Erreichbar nach Massnahmen</th></tr>
+      <tr><td><b>Design</b></td><td class="num">9</td><td class="num">9</td></tr>
+      <tr><td><b>Vertrauen</b></td><td class="num">8</td><td class="num">9–10</td></tr>
+      <tr><td><b>Verständlichkeit</b></td><td class="num">8</td><td class="num">9</td></tr>
+      <tr><td><b>Positionierung</b></td><td class="num">8</td><td class="num">9</td></tr>
+      <tr><td><b>SEO</b></td><td class="num">7</td><td class="num">9</td></tr>
+      <tr><td><b>Conversion</b></td><td class="num">7</td><td class="num">9</td></tr>
+      <tr><td><b>Mobile UX</b></td><td class="num">8</td><td class="num">9</td></tr>
+      <tr><td><b>Gesamtwirkung</b></td><td class="num">8</td><td class="num">9–10</td></tr>
+    </table>
+  </section>
+
+  <footer class="foot">
+    <p><b>Website-Audit v2 · Marco Storz Coaching + Consulting</b></p>
+    <p>Aktueller Stand nach Umsetzung der ersten Roadmap. Alle Massnahmen sind in WIX Studio mit HubSpot- und Outlook-Integration umsetzbar und respektieren die bestehende Marken- und Farbwelt. Die „Sofort"-Punkte erfordern die Verknüpfung Ihrer WIX-, HubSpot- und Outlook-Konten; die Inhalts- und Vertrauenspunkte setze ich auf Wunsch direkt im Prototyp um, bevor sie nach WIX übertragen werden.</p>
+  </footer>
+
+</div>
+</body>
+</html>
