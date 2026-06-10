@@ -673,6 +673,12 @@ section { scroll-margin-top: 84px; }
 }
 .portrait-story p { margin-bottom: 1.1rem; }
 .portrait-story p strong { color: var(--navy); font-weight: 500; }
+.portrait-story-close {
+  margin-top: 1.6rem; padding-left: 1.3rem;
+  border-left: 2px solid var(--steel);
+  color: var(--navy); font-weight: 400; font-style: italic;
+  font-size: 1.05rem; line-height: 1.6;
+}
 
 .portrait-values {
   display: grid; grid-template-columns: repeat(3, 1fr);
